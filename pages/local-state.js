@@ -1,7 +1,6 @@
 // Packages
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import { useDispatch, useSelector } from 'react-redux'
 import { Col } from 'styled-bootstrap-grid'
 import { ArrowRightShort } from 'react-bootstrap-icons'
 import _ from 'lodash'
@@ -16,12 +15,14 @@ import { Container, SlimWrapper, VerticalBox } from '../styles/global'
 import { Background, FormWrapper, FormRow } from '../styles/index'
 import { Title } from '../styles/typography'
 
-// Redux Actions
-import { setLoading, updateField } from '../containers/FormContainer/actions'
-
 export default function Home() {
-  const { form_values, loading } = useSelector((state) => state.form),
-    dispatch = useDispatch(),
+  const [form_values, updateFormValues] = useState({
+      first_name: '',
+      last_name: '',
+      email_address: '',
+      password: '',
+    }),
+    [loading, setLoading] = useState(false),
     router = useRouter(),
     fields = [
       {
@@ -55,7 +56,7 @@ export default function Home() {
     ]
 
   useEffect(() => {
-    dispatch(setLoading(false))
+    setLoading(false)
   }, [])
 
   const onSubmit = () => {
@@ -65,7 +66,7 @@ export default function Home() {
       // Alert user.
       alert('Please enter all fields!')
     } else {
-      dispatch(setLoading(true))
+      setLoading(true)
 
       setTimeout(() => {
         router.push('/greeting')
@@ -74,7 +75,7 @@ export default function Home() {
   }
 
   return (
-    <Layout title="Redux Sample Form">
+    <Layout title="Redux Sample Form -- Local State">
       <Container>
         <Background
           gradients={[
@@ -102,12 +103,10 @@ export default function Home() {
                       label={label}
                       value={form_values[id]}
                       onChange={(event) => {
-                        dispatch(
-                          updateField({
-                            id,
-                            value: event.target.value,
-                          })
-                        )
+                        updateFormValues({
+                          ...form_values,
+                          [id]: event.target.value,
+                        })
                       }}
                     />
                   </Col>
